@@ -3,13 +3,22 @@ const PORT = 8000;
 const axios = require('axios');
 const cheerio = require('cheerio');
 const express = require('express');
-
+const cors = require('cors');
 
 const app = express();
 
 const url = 'https://www.theguardian.com/uk';
 
-axios(url)
+// app.METHOD(PATH, HANDLER)
+app.use(cors());
+app.get('/', (req, res) => {
+    res.json('Hello');
+})
+
+
+app.get('/articles', (req, res) => {
+    console.log('This is invoked');
+    axios(url)
     .then(response => {
         const html = response.data;
         const $ = cheerio.load(html);
@@ -26,9 +35,12 @@ axios(url)
             articles.push({ title, url})
         })
        
-        console.log(articles[0]);
+        res.json(articles);
 
     })
     .catch(err => console.log(err));
+
+})
+
 
 app.listen(PORT, () => console.log(`server running on PORT ${PORT}`));
